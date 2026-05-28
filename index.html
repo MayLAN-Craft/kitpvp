@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MayLan Craft - /kit pvp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Google+Sans:wght@400&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:  #4ade80;
+      --yellow: #fbbf24;
+      --red:    #f87171;
+      --blue:   #60a5fa;
+      --purple: #c084fc;
+      --bg:     #0d0d0d;
+      --card:   #141414;
+      --border: #2a2a2a;
+    }
+
+    body {
+      background: var(--bg);
+      color: #e2e8f0;
+      font-family: 'Google Sans', monospace;
+      font-size: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 16px 80px;
+      overflow-x: hidden;
+    }
+
+    /* ── Stars background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,.25) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 20%, rgba(255,255,255,.35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 75%, rgba(255,255,255,.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 40%, rgba(255,255,255,.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92% 10%, rgba(255,255,255,.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 45% 85%, rgba(255,255,255,.2) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ── */
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    /* ── Logo ── */
+    .logo {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(18px, 4vw, 28px);
+      text-align: center;
+      margin-bottom: 6px;
+      color: var(--green);
+      text-shadow: 0 0 20px rgba(74,222,128,.6), 4px 4px 0 #166534;
+      letter-spacing: 2px;
+    }
+    .logo span { color: var(--yellow); text-shadow: 0 0 20px rgba(251,191,36,.6), 4px 4px 0 #78350f; }
+
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+      font-size: 18px;
+      margin-bottom: 40px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      padding: 36px 40px;
+      box-shadow: 0 0 40px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .card-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 13px;
+      color: var(--yellow);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .card-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .card-desc strong { color: var(--green); }
+
+    /* ── Steps ── */
+    .steps {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .step-dot {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      transition: background .4s;
+    }
+    .step-dot.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .step-dot.done   { background: #166534; }
+
+    /* ── Form ── */
+    label {
+      display: block;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+
+    .input-wrap {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .input-wrap .prefix {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--green);
+      font-size: 22px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: #0a0a0a;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      color: #e2e8f0;
+      font-family: 'Google Sans', monospace;
+      font-size: 22px;
+      padding: 14px 14px 14px 42px;
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+      letter-spacing: 1px;
+    }
+    input[type="text"]:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(74,222,128,.15);
+    }
+    input[type="text"]::placeholder { color: #334155; }
+
+    /* ── Checkbox list ── */
+    .check-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #64748b;
+      font-size: 17px;
+    }
+    .check-icon {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      background: #0a0a0a;
+    }
+
+    /* ── Button ── */
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, #166534, #15803d);
+      border: 2px solid #4ade80;
+      border-radius: 4px;
+      color: #fff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      padding: 18px 24px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all .2s;
+      box-shadow: 0 4px 0 #14532d, 0 0 20px rgba(74,222,128,.2);
+      position: relative;
+      top: 0;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #15803d, #16a34a);
+      box-shadow: 0 4px 0 #14532d, 0 0 30px rgba(74,222,128,.4);
+    }
+    button:active {
+      top: 4px;
+      box-shadow: 0 0 0 #14532d, 0 0 20px rgba(74,222,128,.2);
+    }
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      top: 0;
+    }
+
+    /* ── Loading ── */
+    #step-loading {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .spinner {
+      display: inline-block;
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .load-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      color: var(--green);
+      line-height: 2;
+    }
+    .load-sub {
+      color: #475569;
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    /* ── RESULTS ── */
+    #step-result { display: none; }
+
+    .result-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .skull { font-size: 72px; display: block; margin-bottom: 12px; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+    .result-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(13px, 3vw, 18px);
+      color: var(--red);
+      text-shadow: 0 0 20px rgba(248,113,113,.5);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .result-subtitle {
+      color: #64748b;
+      font-size: 17px;
+    }
+
+    /* ── Info grid ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 520px) { .info-grid { grid-template-columns: 1fr; } }
+
+    .info-card {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .4s, transform .4s;
+    }
+    .info-card.show { opacity: 1; transform: translateY(0); }
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .info-card.green::before  { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .info-card.yellow::before { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+    .info-card.red::before    { background: var(--red); box-shadow: 0 0 8px var(--red); }
+    .info-card.blue::before   { background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+    .info-card.purple::before { background: var(--purple); box-shadow: 0 0 8px var(--purple); }
+
+    .info-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: #475569;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .info-value {
+      font-size: 19px;
+      color: #e2e8f0;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+    .info-value.highlight { color: var(--green); }
+    .info-value.warn      { color: var(--yellow); }
+    .info-value.danger    { color: var(--red); }
+
+    .info-card.full { grid-column: 1 / -1; }
+
+    /* ── "Fake links" section ── */
+    .vote-links {
+      margin-top: 28px;
+      border: 1px solid #1e293b;
+      border-radius: 4px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity .5s .8s;
+    }
+    .vote-links.show { opacity: 1; }
+    .vote-header {
+      background: #0a0a0a;
+      padding: 12px 16px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: #334155;
+    }
+    .vote-link-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      color: #334155;
+      font-size: 16px;
+      text-decoration: line-through;
+    }
+    .vote-link-item::before { content: '❌'; font-size: 14px; }
+
+    /* ── Ban notice ── */
+    .ban-box {
+      margin-top: 24px;
+      background: rgba(248,113,113,.07);
+      border: 2px solid var(--red);
+      border-radius: 4px;
+      padding: 20px 24px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity .5s 1.2s;
+      box-shadow: 0 0 30px rgba(248,113,113,.1);
+    }
+    .ban-box.show { opacity: 1; }
+    .ban-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 13px;
+      color: var(--red);
+      margin-bottom: 12px;
+      line-height: 1.8;
+    }
+    .ban-reason {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .ban-reason span { color: var(--yellow); }
+
+    /* ── Footer joke ── */
+    .footer-joke {
+      margin-top: 32px;
+      text-align: center;
+      color: #1e293b;
+      font-size: 15px;
+      opacity: 0;
+      transition: opacity .5s 1.8s;
+    }
+    .footer-joke.show { opacity: 1; }
+
+    /* ── Scroll to top ── */
+    .restart-btn {
+      margin-top: 28px;
+      background: transparent;
+      border: 2px solid var(--border);
+      color: #475569;
+      font-size: 15px;
+      font-family: 'Google Sans', monospace;
+      padding: 12px 20px;
+      width: auto;
+      box-shadow: none;
+      top: 0;
+    }
+    .restart-btn:hover { border-color: #475569; color: #94a3b8; box-shadow: none; }
+
+    /* ── Notification toast ── */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1e293b;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 24px;
+      font-size: 17px;
+      color: #e2e8f0;
+      z-index: 999;
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    .image {
+        width: 100%;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      .card { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- LOGO -->
+  <img class="image" src="logo.png"/>
+
+  <!-- STEP INDICATOR -->
+  <div class="steps" id="steps-bar">
+    <div class="step-dot active" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+    <div class="step-dot" id="dot-3"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 1 — Ввод ника
+  ══════════════════════════════════════════ -->
+  <div class="card" id="step-form">
+    <div class="card-title">📋 ГОЛОСОВАНИЕ ЗА СЕРВЕР</div>
+    <div class="card-desc">
+      Введи свой ник, чтобы мы сгенерировали персональные ссылки для голосования на мониторингах.
+      После голосования ты получишь <strong>/kit pvp</strong> на сервере!
+    </div>
+
+    <div class="check-list">
+      <div class="check-item">
+        <div class="check-icon">⬜</div>
+        Генерация ссылок для мониторингов
+      </div>
+      <div class="check-item">
+        <div class="check-icon">⬜</div>
+        Привязка голосов к твоему нику
+      </div>
+      <div class="check-item">
+        <div class="check-icon">⬜</div>
+        Выдача /kit pvp после голосования
+      </div>
+    </div>
+
+    <label for="nick-input">ТВОЙ НИК В MINECRAFT</label>
+    <div class="input-wrap">
+      <span class="prefix">▶</span>
+      <input
+        type="text"
+        id="nick-input"
+        placeholder="Steve"
+        maxlength="16"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <button id="btn-generate" onclick="startScan()">
+      ⚡ СГЕНЕРИРОВАТЬ ССЫЛКИ
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 2 — Загрузка (анимация)
+  ══════════════════════════════════════════ -->
+  <div class="card" id="step-loading">
+    <div style="text-align:center;padding:20px 0;">
+      <div class="spinner"></div>
+      <div class="load-text" id="load-text">ПОДКЛЮЧЕНИЕ К МОНИТОРИНГАМ...</div>
+      <div class="load-sub" id="load-sub">это займёт несколько секунд</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 3 — Результаты (шутка)
+  ══════════════════════════════════════════ -->
+  <div class="card" id="step-result">
+
+    <div class="result-header">
+      <span class="skull">💀</span>
+      <div class="result-title">Дорогой <span id="result-nick" style="color:var(--yellow)"></span></div>
+      <div class="result-subtitle">ищи себя в прошмандовках Майлана</div>
+    </div>
+
+    <div class="info-grid" id="info-grid">
+      <!-- заполняется JS -->
+    </div>
+
+    <div class="vote-links" id="vote-links">
+      <div class="vote-header">🔗 ТВОИ "ССЫЛКИ" ДЛЯ ГОЛОСОВАНИЯ</div>
+      <div class="vote-link-item">minecraft-monitor.ru/vote?nick=...</div>
+      <div class="vote-link-item">https://hotmc.ru/minecraft-server-282926/vote</div>
+      <div class="vote-link-item">mineservers.ru/vote/maylancraft</div>
+    </div>
+
+    <div class="ban-box" id="ban-box">
+      <div class="ban-title">🔨 АВТОМАТИЧЕСКИЙ БАН</div>
+      <div class="ban-reason">
+        Игрок <span id="ban-nick"></span> забанен на сервере.<br/>
+        Причина: <span>подозрительная активность браузера</span><br/>
+        Срок: <span style="color:var(--red)">НАВСЕГДА</span>
+      </div>
+    </div>
+
+    <div class="footer-joke" id="footer-joke">
+      ☝️ это шутка. /kit pvp на сервере — тоже шутка. никаких данных мы не сохраняем. всё прочитано прямо из твоего браузера.
+    </div>
+
+    <div style="text-align:center; margin-top:24px;">
+      <button class="restart-btn" onclick="restart()">↩ начать заново</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div id="toast">✅ Ник скопирован!</div>
+
+<script>
+/* ── Helpers ── */
+const $  = id => document.getElementById(id);
+const show = id => $(id).style.display = 'block';
+const hide = id => $(id).style.display = 'none';
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ── Step transitions ── */
+function setStep(n) {
+  ['step-form','step-loading','step-result'].forEach((id,i) => {
+    $(id).style.display = (i + 1 === n) ? 'block' : 'none';
+  });
+  [1,2,3].forEach(i => {
+    const dot = $(`dot-${i}`);
+    dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+  });
+}
+
+/* ── Data collectors ── */
+function getBrowserName(ua) {
+  if (/Edg\//i.test(ua))    return 'Microsoft Edge';
+  if (/OPR\//i.test(ua))    return 'Opera';
+  if (/YaBrowser/i.test(ua))return 'Яндекс Браузер';
+  if (/Firefox\//i.test(ua))return 'Mozilla Firefox';
+  if (/Chrome\//i.test(ua)) return 'Google Chrome';
+  if (/Safari\//i.test(ua)) return 'Apple Safari';
+  return 'Неизвестный браузер';
+}
+
+function getOS(ua) {
+  if (/Windows NT 10/i.test(ua)) return 'Windows 10/11';
+  if (/Windows NT 6.1/i.test(ua))return 'Windows 7';
+  if (/Windows/i.test(ua))       return 'Windows';
+  if (/Android/i.test(ua)) {
+    const m = ua.match(/Android ([\d.]+)/);
+    return 'Android ' + (m ? m[1] : '');
+  }
+  if (/iPhone|iPad/i.test(ua))   return 'iOS';
+  if (/Mac OS X/i.test(ua))      return 'macOS';
+  if (/Linux/i.test(ua))         return 'Linux';
+  return 'Неизвестная ОС';
+}
+
+function getDeviceType() {
+  const ua = navigator.userAgent;
+  if (/Mobi|Android/i.test(ua)) return '📱 Мобильный';
+  if (/Tablet|iPad/i.test(ua))  return '📲 Планшет';
+  return '🖥️ Компьютер';
+}
+
+function formatTime(d) {
+  return d.toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'medium' });
+}
+
+function getTimezone() {
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone; }
+  catch { return 'Неизвестно'; }
+}
+
+async function getIP() {
+  try {
+    const r = await fetch('https://get.geojs.io/v1/ip/geo.json', { signal: AbortSignal.timeout(5000) });
+    return await r.json();
+  } catch {
+    return null;
+  }
+}
+
+/* ── Build info cards ── */
+function makeCard(label, value, color = 'green', full = false) {
+  const cls = full ? 'info-card ' + color + ' full' : 'info-card ' + color;
+  return `
+    <div class="${cls}">
+      <div class="info-label">${label}</div>
+      <div class="info-value">${value}</div>
+    </div>`;
+}
+
+async function buildCards(nick) {
+  const ua       = navigator.userAgent;
+  const browser  = getBrowserName(ua);
+  const os       = getOS(ua);
+  const device   = getDeviceType();
+  const lang     = navigator.language || 'неизвестно';
+  const langs    = navigator.languages ? navigator.languages.join(', ') : lang;
+  const screen_  = `${screen.width} × ${screen.height}`;
+  const viewport = `${window.innerWidth} × ${window.innerHeight}`;
+  const dpr      = window.devicePixelRatio || 1;
+  const tz       = getTimezone();
+  const now      = formatTime(new Date());
+  const cores    = navigator.hardwareConcurrency || '?';
+  const ram      = navigator.deviceMemory ? navigator.deviceMemory + ' ГБ' : 'скрыто';
+  const online   = navigator.onLine ? '<span class="highlight">онлайн ✓</span>' : '<span class="danger">офлайн</span>';
+  const dnt      = navigator.doNotTrack === '1' ? '<span class="warn">включён (помогло? нет)</span>' : 'выключен';
+  const touch    = navigator.maxTouchPoints > 0 ? `да (${navigator.maxTouchPoints} точек)` : 'нет';
+  const referrer = document.referrer || 'прямой заход';
+  const platform = navigator.platform || 'неизвестно';
+  const cookies  = navigator.cookieEnabled ? '<span class="warn">включены ✓</span>' : 'выключены';
+
+  // WebGL
+  let gpu = 'неизвестно';
+  try {
+    const c = document.createElement('canvas');
+    const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+    if (gl) {
+      const ext = gl.getExtension('WEBGL_debug_renderer_info');
+      if (ext) gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+    }
+  } catch {}
+
+  let cards = '';
+
+  // IP block — async
+  const ipData = await getIP();
+  if (ipData && ipData.ip) {
+    cards += makeCard('🌐 IP-адрес', `<span class="danger">${ipData.ip}</span>`, 'red');
+    cards += makeCard('📍 Местоположение',
+      `${ipData.country || ''}`.replace(/^,\s*|,\s*$/g,''),
+      'red');
+    if (ipData.organization_name)     cards += makeCard('🏢 Провайдер', ipData.organization_name, 'yellow');
+    if (ipData.asn)  cards += makeCard('📮 ASN', ipData.asn, 'yellow');
+    if (ipData.latitude && ipData.longitude)
+      cards += makeCard('🗺️ Координаты',
+        `<a href="https://maps.google.com/?q=${ipData.latitude},${ipData.longitude}" target="_blank" style="color:var(--blue);text-decoration:none">${ipData.latitude}, ${ipData.longitude} 🔗</a>`,
+        'red');
+  } else {
+    cards += makeCard('🌐 IP-адрес', '<span class="warn">не удалось получить (VPN?)</span>', 'yellow');
+  }
+
+  cards += makeCard('🖥️ Устройство', device, 'blue');
+  cards += makeCard('🧭 Браузер', browser, 'blue');
+  cards += makeCard('💻 Операционная система', os, 'blue');
+  cards += makeCard('📐 Разрешение экрана', screen_, 'green');
+  cards += makeCard('🪟 Размер окна', viewport, 'green');
+  cards += makeCard('🔍 Масштаб (DPR)', dpr + 'x', 'green');
+  cards += makeCard('🕐 Часовой пояс', tz, 'purple');
+  cards += makeCard('⏰ Время на устройстве', now, 'purple');
+  cards += makeCard('🌍 Язык браузера', langs, 'purple');
+  cards += makeCard('🧠 Ядра CPU', cores + ' шт.', 'green');
+  cards += makeCard('💾 ОЗУ', ram, 'green');
+  cards += makeCard('⚡ Статус', online, 'green');
+  cards += makeCard('🍪 Cookies', cookies, 'yellow');
+  cards += makeCard('🚫 Do Not Track', dnt, 'yellow');
+  cards += makeCard('👆 Сенсорный экран', touch, 'blue');
+  cards += makeCard('📌 Платформа (OS)', platform, 'blue');
+  cards += makeCard('🔗 Откуда зашёл', referrer, 'purple');
+  if (gpu !== 'неизвестно')
+    cards += makeCard('🎮 Видеокарта (WebGL)', gpu, 'purple', true);
+  cards += makeCard('👤 User-Agent', `<span style="font-size:15px;color:#475569">${ua}</span>`, 'red', true);
+
+  return cards;
+}
+
+/* ── Fake loading messages ── */
+const loadMsgs = [
+  ['ПОДКЛЮЧЕНИЕ К МОНИТОРИНГАМ...', 'устанавливаем защищённое соединение'],
+  ['ПРОВЕРКА НИКА...', 'ищем твой аккаунт в базе данных'],
+  ['ГЕНЕРАЦИЯ ССЫЛОК...', 'почти готово...'],
+  ['АНАЛИЗ ДАННЫХ БРАУЗЕРА...', 'ой подождите это не то'],
+  ['СБОР ИНФОРМАЦИИ...', 'хм, а это интересно'],
+  ['ФИНАЛЬНАЯ ПРОВЕРКА...', 'последние штрихи...'],
+];
+
+/* ── Main flow ── */
+async function startScan() {
+  const nick = $('nick-input').value.trim();
+  if (!nick) {
+    $('nick-input').style.borderColor = 'var(--red)';
+    $('nick-input').focus();
+    toast('⚠️ Введи свой ник!');
+    setTimeout(() => $('nick-input').style.borderColor = '', 1500);
+    return;
+  }
+
+  setStep(2);
+
+  // Показываем сменяющиеся сообщения
+  let mi = 0;
+  const loadInterval = setInterval(() => {
+    mi++;
+    if (mi < loadMsgs.length) {
+      $('load-text').textContent = loadMsgs[mi][0];
+      $('load-sub').textContent  = loadMsgs[mi][1];
+    }
+  }, 700);
+
+  // Параллельно собираем данные
+  const cards = await buildCards(nick);
+
+  clearInterval(loadInterval);
+  await sleep(400);
+
+  // Показываем результат
+  $('info-grid').innerHTML = cards;
+  $('result-nick').textContent = nick;
+  $('ban-nick').textContent = nick;
+  setStep(3);
+
+  // Анимация появления карточек
+  const cardEls = document.querySelectorAll('.info-card');
+  cardEls.forEach((el, i) => {
+    setTimeout(() => el.classList.add('show'), i * 60);
+  });
+
+  // Остальные блоки
+  setTimeout(() => $('vote-links').classList.add('show'), 600);
+  setTimeout(() => $('ban-box').classList.add('show'), 1200);
+  setTimeout(() => $('footer-joke').classList.add('show'), 1800);
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function restart() {
+  $('nick-input').value = '';
+  ['vote-links','ban-box','footer-joke'].forEach(id => $(id).classList.remove('show'));
+  document.querySelectorAll('.info-card').forEach(el => el.classList.remove('show'));
+  setStep(1);
+  setTimeout(() => $('nick-input').focus(), 100);
+}
+
+// Enter key
+$('nick-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startScan();
+});
+
+// Init
+setStep(1);
+</script>
+</body>
+</html>
